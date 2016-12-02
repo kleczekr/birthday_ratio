@@ -1,0 +1,105 @@
+---
+title: "R Notebook"
+output:
+  html_document: default
+  html_notebook: default
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
+
+
+```{r}
+brth <- read.csv("birthdaysExample.csv", sep=",")
+```
+
+```{r}
+summary(brth)
+```
+
+The four calls below convert the date to a datetime format, extract days and months to a separate columns, and delete the "dates" column for convenience.
+
+```{r}
+brth$dates <- as.Date(brth$dates, "%m/%d")
+```
+
+```{r}
+brth$months <- as.numeric(format(brth$dates, "%m"))
+```
+
+
+```{r}
+brth$days <- as.numeric(format(brth$dates, "%d"))
+```
+
+
+```{r}
+brth <- brth[c("months", "days")]
+```
+
+As the data is extracted, we may commence some introductory analysis.
+
+```{r}
+summary(brth)
+```
+
+
+```{r}
+library(ggplot2)
+```
+
+
+```{r}
+ggplot(aes(x = months), data = brth) +
+  geom_histogram(bins = 12)
+```
+
+Let us explore this further with frequency plots for months and for days:
+
+```{r}
+ggplot(aes(x = months), data = brth) +
+  geom_freqpoly(bins = 12) +
+  scale_x_continuous(breaks = 1:12)
+```
+
+```{r}
+ggplot(aes(x = days), data = brth) +
+  geom_freqpoly(bins = 12) +
+  scale_x_continuous(breaks = 1:31)
+```
+
+The plots indicate the following trends:
+
+- The most common month of birth in the group is March, with close to 100 births. It is closely followed by September.
+
+- There are definite spikes in the days of birth, with most common days (counting over 100) being: 8th, 19th, and 27th.
+
+We will confirm the most common values for months and days by simply sorting the data:
+
+```{r}
+dtab <- table(brth$days)
+```
+
+
+```{r}
+sort(dtab,decreasing=TRUE)[1:5]
+```
+
+```{r}
+mtab <- table(brth$months)
+```
+
+```{r}
+sort(mtab, decreasing = TRUE)[1:5]
+```
+
+The results of that seem to be somewhat different from results of frequency plots. The most popular day of birth turns out to be fourteents, with 48 births. The second most common value is 40 births, shared by days 9th, 17th and 19th. The most common month of birth is March, with 98 births, closely followed by September.
